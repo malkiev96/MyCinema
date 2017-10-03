@@ -67,15 +67,18 @@ if(isset($_POST['submit'])) {
 </head>
 <body>
 <?include "includes/header.php";?>
+
 <div id="content">
+
     <form method="POST">
         Логин <input name="login" type="text"><br>
         Пароль <input name="password" type="password"><br>
         Не прикреплять к IP(не безопасно) <input type="checkbox" hidden value="1" name="not_attach_ip"><br>
         <input name="submit" type="submit" value="Войти">
     </form>
+
 </div>
-Hello Worlda
+
 <?include "includes/footer.php";?>
 </body>
 </html>
