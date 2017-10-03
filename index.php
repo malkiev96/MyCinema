@@ -16,7 +16,6 @@ require "includes/config.php"
     <?include "includes/header.php";?>
 
     <div id="content">
-
             <?php
             if ($_GET){
 
