@@ -1,7 +1,7 @@
 <?php
 require "includes/config.php";
 
-// Страница авторизации
+// Страница авторизации Hello World
 
 // Функция для генерации случайной строки
 function generateCode($length=6) {
