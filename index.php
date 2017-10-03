@@ -1,7 +1,5 @@
 <?php
-
 require "includes/config.php"
-
 
 ?>
 
@@ -16,8 +14,6 @@ require "includes/config.php"
 <body>
 <div class="container">
     <?include "includes/header.php";?>
-
-
 
     <div id="content">
 
