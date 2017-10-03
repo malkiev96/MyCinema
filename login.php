@@ -69,7 +69,7 @@ if(isset($_POST['submit'])) {
 <?include "includes/header.php";?>
 
 <div id="content">
-
+qweqwe
     <form method="POST">
         Логин <input name="login" type="text"><br>
         Пароль <input name="password" type="password"><br>
