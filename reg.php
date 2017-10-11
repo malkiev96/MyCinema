@@ -3,8 +3,17 @@ require "includes/config.php";
 
 // Страница регистрации нового пользователя
 
+function generateCode($length=6) {
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHI JKLMNOPRQSTUVWXYZ0123456789";
+    $code = "";
+    $clen = strlen($chars) - 1;
+    while (strlen($code) < $length) {
+        $code .= $chars[mt_rand(0,$clen)];
+    }
+    return $code;
+}
 
-if(isset($_POST['submit'])) {
+if($_POST) {
     $err = array();
     // проверям логин
     if(!preg_match("/^[a-zA-Z0-9]+$/",$_POST['login']))
@@ -34,9 +43,30 @@ if(isset($_POST['submit'])) {
         $password = md5(md5(trim($_POST['password'])));
 
         mysqli_query($connection,"INSERT INTO users SET user_login='$login', user_password='$password'");
-        mysqli_query($connection,"INSERT INTO user_roles SET user_id=(SELECT user_id FROM users WHERE user_login=$login), role_id='1'");
+        $queryq = mysqli_query($connection,"SELECT user_id FROM users WHERE user_login='$login'");
+        $user_id = mysqli_fetch_assoc($queryq);
+        $id = $user_id['user_id'];
+        mysqli_query($connection,"INSERT INTO user_roles SET user_id='$id', role_id='1'");
 
-        header("Location: login.php"); exit();
+        // Генерируем случайное число и шифруем его
+        $hash = md5(generateCode(10));
+
+        if(!empty($_POST['not_attach_ip']))
+        {
+            // Если пользователя выбрал привязку к IP
+            // Переводим IP в строку
+            $insip = ", user_ip=INET_ATON('".$_SERVER['REMOTE_ADDR']."')";
+        }
+
+        // Записываем в БД новый хеш авторизации и IP
+        mysqli_query($connection, "UPDATE users SET user_hash='".$hash."' ".$insip." WHERE user_id='$id'");
+
+
+        // Ставим куки
+        setcookie("id", $id, time()+60*60*24*30);
+        setcookie("hash", $hash, time()+60*60*24*30,null,null,null,true); // httponly !!!
+
+        header("Location: /cabinet"); exit();
     }
     else
     {
@@ -56,17 +86,32 @@ if(isset($_POST['submit'])) {
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="includes/css/style.css">
+    <style>
+        span{
+            width: 150px;
+            display: inline-block;
+            font-weight: bold;
+            padding: 5px 5px 5px 0;
+        }
+    </style>
 </head>
 <body>
 <?include "includes/header.php";?>
 
 <div id="content">
-
+    <h1>Регистрация</h1>
     <form method="POST">
-        Логин <input name="login" type="text"><br>
-        Пароль <input name="password" type="password"><br>
-        <input name="submit" type="submit" value="Зарегистрироваться">
-
+        <div>
+            <span>Логин: </span>
+            <span><input style="font: inherit; font-weight: normal; padding: 5px"  name="login" placeholder="login" type="text"></span>
+        </div>
+        <div>
+            <span>Пароль: </span>
+            <span><input style="font: inherit; font-weight: normal; padding: 5px" name="password" type="password"></span>
+        </div>
+        <div style="display: inline-block; margin-right: 15px">
+            <button style="cursor: pointer" class="button-red" type="submit">Войти</button>
+        </div>
     </form>
 </div>
 

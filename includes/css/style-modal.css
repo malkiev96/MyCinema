@@ -1,0 +1,121 @@
+
+/* Базовые стили слоя затемнения и модального окна  */
+.overlay {
+top: 0;
+right: 0;
+bottom: 0;
+left: 0;
+z-index: 9999;
+visibility: hidden;
+/* фон затемнения */
+background-color: rgba(0, 0, 0, 0.7);
+opacity: 0;
+position: fixed; /* фиксированное поцизионирование */
+cursor: default; /* тип курсара */
+-webkit-transition: all 0.6s;
+-moz-transition: all 0.6s;
+-ms-transition: all 0.6s;
+-o-transition: all 0.6s;
+transition: all 0.6s;
+}
+.overlay:target {
+visibility: visible;
+opacity: 1;
+}
+
+/* стили модального окна */
+.popup {
+top: 0;
+right: 0;
+left: 50%;
+z-index: 10000;
+margin: 0 auto;
+width: 100%;
+min-width: 320px;
+max-width: 620px;
+/* фиксированное позиционирование, окно стабильно при прокрутке */
+position: fixed;
+padding: 15px;
+border: 1px solid #3e4d5c;
+background-color: #FFFFFF;
+/* внешняя тень */
+-webkit-box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+-moz-box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+-ms-box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+-o-box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+box-shadow: 0 15px 20px rgba(0,0,0,.22),0 19px 60px rgba(0,0,0,.3);
+/* трансформация */
+-webkit-transform: translate(-50%, -150%);
+-ms-transform: translate(-50%, -150%);
+-o-transform: translate(-50%, -150%);
+transform: translate(-50%, -150%);
+/* анимируем трансформацию */
+-webkit-transition: transform 0.6s ease-out;
+-moz-transition: transform 0.6s ease-out;
+-ms-transition: transform 0.6s ease-out;
+-o-transition: transform 0.6s ease-out;
+transition: transform 0.6s ease-out;
+}
+/* активируем мод. окно */
+.overlay:target+.popup {
+top: 30%;
+-webkit-transform: translate(-50%,-50%);
+-ms-transform: translate(-50%, -50%);
+-o-transform: translate(-50%, -50%);
+transform: translate(-50%, -50%);
+}
+/* формируем кнопку закрытия */
+.close {
+position: absolute;
+padding: 0;
+top: -10px;
+right: -10px;
+width: 22px;
+height: 22px;
+border: 2px solid #ccc;
+-webkit-border-radius: 50%;
+-moz-border-radius: 50%;
+-ms-border-radius: 50%;
+-o-border-radius: 50%;
+border-radius: 50%;
+background-color: rgba(61, 61, 61, 0.8);
+-webkit-box-shadow: 0px 0px 10px #000;
+-moz-box-shadow: 0px 0px 10px #000;
+box-shadow: 0px 0px 10px #000;
+text-align: center;
+text-decoration: none;
+font-weight: bold;
+line-height: 20px;
+-webkit-transition: background-color ease .7s;
+-moz-transition:  background-color ease .7s;
+-ms-transition:  background-color ease .7s;
+-o-transition:  background-color ease .7s;
+transition: background-color ease .7s;
+}
+.close:before {
+color: rgba(255, 255, 255, 0.9);
+content: '\2715';
+text-shadow: 0 -1px rgba(0, 0, 0, 0.9);
+font-size: 12px;
+ 
+}
+
+.close:hover {
+background-color: rgba(252, 20, 0, 0.8);
+}
+.popup p {
+margin: 0;
+padding: 10px;
+}
+/* планшет */
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+	.popup {
+		width: 95%;
+	}
+}
+/* смарт */
+@media only screen and (min-width: 320px) and (max-width: 767px) {
+	.popup {
+		width:85%;
+	}
+}

@@ -10,22 +10,23 @@ require "includes/config.php"
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="includes/css/style.css">
+    <link rel="stylesheet" href="includes/css/style-modal.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-<div class="container">
-    <?include "includes/header.php";?>
+<?include "includes/header.php";?>
 
-    <div id="content">
+<div class="main">
+    <div class="container">
             <?php
             if ($_GET){
 
             }else{//показываем сеансы на сегодня
 
                 ?>
-                <h1>Сегодня в прокате</h1><br>
-        <div class="content-films">
+                <h1>Сегодня в прокате</h1>
+        <div class="film_list">
                 <?php
-
 
                 $sessionsToday = mysqli_query($connection,"SELECT * FROM session WHERE date=CURRENT_DATE()");
                 if (mysqli_num_rows($sessionsToday)==0){
@@ -33,7 +34,7 @@ require "includes/config.php"
                 }
                 else {
                     $usedFilms = array();
-                    //надо бы комментить...
+                    //А это комментарий..
                     while ($session = mysqli_fetch_assoc($sessionsToday)) {
                         $id_film = $session['id_film'];
                         if ($usedFilms[$id_film] == false) {
@@ -45,13 +46,12 @@ require "includes/config.php"
                                  onmouseover="showItem(id)" onmouseout="hideItem(id)"
                                  style="background: url(<?php echo $film['logo']; ?>); background-size: 100%;">
 
-                                <div class="layout-film-item" style="visibility: hidden; width: 230px; height: 343px;
+                                <div class="layout-film-item" style="visibility: hidden; width: 267px; height: 380px;
                                 color: white; background-color:rgba(0,0,0,.5);" id="<?echo 'layout-film-item-'.$film["id"]?>">
-                                    <div style="width: 200px; height: 313px; padding: 15px; ">
+                                    <div style="width: 237px; height: 350px; padding: 25px; ">
                                         <div class="filmName"><?=$film['name']?></div>
                                         <div class="filmAge"><?=$film['age']?>+</div>
-                                       <!-- <div class="filmDesc"><?/*=substr($film['description'],0,155)*/?></div>-->
-                                        ###
+                                        <div style="position: absolute; bottom: 120px;"><a href="/films/?id=<?=$film['id']?>" class="button-info">Подробнее</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -65,9 +65,9 @@ require "includes/config.php"
         </div>
         <h1>Скоро в прокате</h1>
     </div>
-
-    <?include "includes/footer.php";?>
 </div>
+
+<?include "includes/footer.php";?>
 
 
 <script type="text/javascript">

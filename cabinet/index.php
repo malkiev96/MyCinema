@@ -16,6 +16,8 @@ if ($user!=null){
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="../includes/css/style.css">
+    <link rel="stylesheet" href="../includes/css/style-modal.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
 <?include "../includes/header.php";?>

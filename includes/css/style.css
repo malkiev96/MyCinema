@@ -1,98 +1,84 @@
 body{
-
     width: 100%;
     margin: auto;
+    color: #3e4d5c;
+    font: 400 14px 'Open Sans', Arial, sans-serif;
 }
 
 .container{
-
+    width: 1140px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
-header{
-    width: 100%;
-    height: 150px;
+.pre-header{
+    color: #616b76;
+    border-bottom: 1px solid #eee;
+    padding-top: 10px;
+    background: #fff;
 }
 
-#userHeader{
-    width: 100%;
-    height: 100px;
-    background-color: #00a4e6;
-}
-
-#user{
-    width: 960px;
-    height: 100px;
+.right-align{
     text-align: right;
-    margin: auto;
+    padding-bottom: 10px;
+    padding-right: 20px;
+}
+.left-align{
+    text-align: left;
+}
+
+.header{
+    width: 100%;
+    height: 70px;
+    background-color: #fefefe;
+    border-bottom: 1px solid #eee;
+}
+
+.header-navigation{
+    display: block;
+}
+
+ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
 }
 
 li{
-    display: inline-block;
+    float: left;
 }
 
-ul {
-    padding: 0;
+li a{
+    display: block;
+    color: #767f88;
+    text-align: center;
+    font-size: 1.1em;
+    padding: 26px;
+    text-decoration: none;
+}
+
+li a:hover{
+    background-color: #c00107;
+    color: #fefefe;
+}
+
+h1{
     margin: 0;
-    list-style: none;
+    padding-top: 25px;
+    padding-bottom: 10px;
+    font: 23px 'PT Sans Narrow', sans-serif;
 }
 
-#user ul li a{
-    display: inline-block;
-    color: white;
-    font-weight: bold;
-    font-family: 'Effra', Tahoma, Arial, Helvetica, sans-serif;
-    padding: 25px 0;
-    margin-left: 15px;
-    text-decoration: none;
-    height: 50px;
-}
-
-#nav ul li a{
-    display: inline-block;
-    color: black;
-    font-weight: bold;
-    font-family: 'Effra', Tahoma, Arial, Helvetica, sans-serif;
-    padding: 15px 0;
-    margin-right: 15px;
-    text-decoration: none;
-}
-
-#nav ul li a:hover{
-    display: inline-block;
-    color: #00a4e6;
-    font-weight: bold;
-    font-family: 'Effra', Tahoma, Arial, Helvetica, sans-serif;
-    padding: 15px 0;
-    margin-right: 15px;
-    text-decoration: none;
-}
-
-#navHeader{
+.main{
     width: 100%;
-    height: 50px;
+    background-color: #f9f9f9;
 }
 
-#nav{
-    width: 960px;
-    height: 50px;
-    margin: auto;
-}
 
-#search{
-    width: 100%;
-    height: 50px;
-    background-color: #586067;
-}
-
-#searchContent{
-    width: 960px;
-    height: 50px;
-    color: #ffffff;
-    padding: 15px 0;
-    margin: auto;
-}
 
 footer{
+    margin-top: 15px;
     width: 100%;
     height: 50px;
     background-color: #ededed;
@@ -105,30 +91,16 @@ div#footer{
     margin: auto;
 }
 
-#content{
-    width: 960px;
-    margin: auto;
-}
-
-h1{
-    display: inline-block;
-    margin: 5px 0;
-    padding-bottom: 5px;
-    font-size: 1.6rem;
-    line-height: 1.25em;
-    border-bottom: 3px solid #00a4e6;
-}
-
-.content-films{
-    margin: 0;
+.film_list{
     padding: 0;
+    width: 100%;
 
 }
 
 .film-item{
-    width: 230px;
-    height: 343px;
-    margin-right: 3px;
+    width: 267px;
+    height: 380px;
+    margin-right: 15px;
     display: inline-block;
     vertical-align:top;
    }
@@ -136,7 +108,7 @@ h1{
 
 .filmName {
     color: white;
-    font-size: 1.2em;
+    font-size: 1.3em;
     font-weight: bold;
     font-family: 'Effra', Tahoma, Arial, Helvetica, sans-serif;
 }
@@ -145,7 +117,93 @@ h1{
     padding-top: 15px;
 }
 
+.button-info{
+    background-color: #c00107;
+    color: white;
+    width: 207px;
+    margin-top: 20px;
+    text-align: center;
+    padding: 8px 5px;
+    display: block;
+    font-family:  sans-serif;
+}
 
+.button-info:hover{
+    background-color: #9d0107;
+}
+
+a{
+    color: #3e4d5c;
+}
+
+a:link {
+    text-decoration: none;
+}
+a:visited {
+    text-decoration: none; }
+a:active {
+    text-decoration: none;
+}
+a:hover.textHref  {
+    color: #c00107;
+    text-decoration: underline;
+}
+
+.label{
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+input{
+    border-top: solid 1px;
+    padding: 5px;
+    min-width: 40%;
+}
+
+
+.button-close{
+    padding: 10px;
+    color: #bdbdbd;
+    background-color: #fefefe;
+    border: solid 1px #cccccc;
+    cursor: pointer;
+}
+
+button.login{
+    padding: 10px;
+    color: #fefefe;
+    background-color: #35aa47;
+    border: solid 1px #35aa47;
+    cursor: pointer;
+}
+
+button.login:hover{
+    background-color: #2e9340;
+}
+
+
+
+
+.film-info{
+    min-height: 370px;
+    padding-right: 20px;
+}
+
+img#film-logo{
+    padding-right: 15px;
+    padding-top: 45px;
+    float: left;
+    width: 238px;
+    height: 340px;
+}
+
+.td-info{
+    font-weight: bold;
+}
+
+td{
+    padding-right: 35px;
+}
 
 
 
