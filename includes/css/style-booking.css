@@ -1,0 +1,208 @@
+
+.seat-view{
+    width: 60%;
+    padding: 15px;
+    background-color: white;
+    float: left;
+}
+
+.seat-film{
+    width: 32%;
+    padding: 15px;
+    background-color: white;
+    margin-left: 65%;
+}
+
+#legend{
+    padding-bottom: 15px;
+}
+
+.seat-col{
+    width: 15px;
+    display: inline;
+    height: 21px;
+    line-height: 21px;
+    padding-right: 25px;
+    position: absolute;
+    margin-left: -25px;
+}
+
+.row{
+    margin-left: 25px;
+}
+
+.row span {
+    display: inline-block;
+    height: 21px;
+    line-height: 21px;
+    background: url(../../includes/img/seat-type.png) right 0 no-repeat;
+    text-align: right;
+    padding-right: 25px;
+    margin-bottom: 5px;
+}
+
+span.has-seat {
+    cursor: pointer;
+}
+
+span.lock-seat {
+    background-position: right -21px;
+}
+.has-seat.econ-seat.sell-seat {
+    background-position: right -42px;
+}
+.has-seat.norm-seat.sell-seat {
+    background-position: right -42px;
+}
+.has-seat.vip-seat.sell-seat {
+    background-position: right -42px;
+}
+span.love-seat {
+    background-position: right -63px;
+}
+
+span.econ-seat{
+    background-position: right -84px;
+}
+
+span.norm-seat{
+    background-position: right -63px;
+}
+
+span.vip-seat{
+    background-position: right 0;
+}
+
+.seat-film h2{
+    display: inline-block;
+    font: 300 24px 'Open Sans', sans-serif;
+    font-size: 18px;
+    vertical-align: top;
+    padding-bottom: 5px;
+    margin: 0;
+}
+
+.seat-img{
+    float:left;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    width: 30%;
+}
+
+.seat-info{
+    padding-bottom: 8px;
+    font: 300 24px 'Open Sans', sans-serif;
+    font-size: 14px;
+}
+
+.econom{
+    height: 21px;
+    line-height: 21px;
+    background: url(../../includes/img/seat-type.png) no-repeat right -84px;
+    text-align: right;
+    padding-right: 25px;
+    margin-right: 5px;
+}
+.norm{
+    height: 21px;
+    line-height: 21px;
+    background: url(../../includes/img/seat-type.png) no-repeat right -63px;
+    text-align: right;
+    padding-right: 25px;
+    margin-right: 5px;
+}
+.vip{
+    height: 21px;
+    line-height: 21px;
+    background: url(../../includes/img/seat-type.png) no-repeat right 0;
+    text-align: right;
+    padding-right: 25px;
+    margin-right: 5px;
+}
+
+.unavailable{
+    height: 21px;
+    line-height: 21px;
+    background: url(../../includes/img/seat-type.png) no-repeat right -23px;
+    text-align: right;
+    padding-right: 25px;
+    margin-right: 5px;
+}
+
+.chosen{
+    height: 21px;
+    line-height: 21px;
+    background: url(../../includes/img/seat-type.png) no-repeat right -45px;
+    text-align: right;
+    padding-right: 25px;
+    margin-right: 5px;
+}
+
+.selected{
+    padding: 5px 8px;
+    display: inline-block;
+    border: solid 1px #c00107;
+    margin: 5px 5px 5px 0;
+    border-radius: 5px;
+}
+
+button#go-payment{
+    background-color: #c00107;
+    color: white;
+    margin-top: 5px;
+    text-align: center;
+    padding: 10px 15px;
+    cursor: pointer;
+
+}
+
+#input-email{
+    padding: 10px;
+    border-radius: 15px;
+    border: groove 2px;
+    min-width: 220px;
+}
+
+#payMethod{
+    width: 220px;
+    border-radius: 15px;
+    padding: 10px;
+    border: groove 2px;
+}
+
+h4{
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+#divCart{
+    width: 360px;
+    padding: 30px;
+    border-radius: 15px;
+    background-color: #cccccc;
+}
+
+#formNumber{
+    width: 330px;
+    border-radius: 15px;
+    border: groove 2px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#formYear{
+    padding: 10px;
+    border: groove 2px;
+    border-radius: 15px;
+    width: 150px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+
+
+#formCVC{
+    padding: 10px;
+    border: groove 2px;
+    border-radius: 15px;
+    width: 145px;
+}

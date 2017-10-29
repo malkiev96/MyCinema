@@ -1,19 +1,29 @@
-<?php
-
-require "../includes/config.php";
-
-?>
-
-
-
 <!doctype html>
-<html lang="en">
+<html>
 <head>
+    <?php
+    require_once "../includes/config.php";
+    ?>
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="../includes/css/style.css">
     <link rel="stylesheet" href="../includes/css/style-modal.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/includes/js/myScript.js"></script>
+    <style>
+        .table-th{
+            text-align: left;
+            font-size: larger;
+            padding-bottom: 10px;
+            padding-right: 50px;
+            border-bottom: 1px solid #bdbdbd;
+        }
+        .table-td{
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #bdbdbd;
+        }
+    </style>
 </head>
 <body>
 <?include "../includes/header.php";?>
@@ -22,63 +32,139 @@ require "../includes/config.php";
     <div class="container">
 
     <?php
-    if ($_GET){
-        if (isset($_GET['id'])){
 
-            $id = $_GET['id'];
-            $filmQuery = mysqli_query($connection, "SELECT * FROM film WHERE id=$id");
-            if (mysqli_num_rows($filmQuery)!=null){
-                $film = mysqli_fetch_assoc($filmQuery);
+    //показываем фильм
+    if (isset($_GET['id'])){
 
-                echo "<div class='film-info'>";
-                echo "<img id='film-logo' src=  ".$film['logo']." width=300><br>";
+        $id = $_GET['id'];
+        $filmQuery = mysqli_query($connection, "SELECT * FROM film WHERE id=$id");
+        if (mysqli_num_rows($filmQuery)!=null){
+            $film = mysqli_fetch_assoc($filmQuery);
 
-                if ($film['format']=='3D'){
-                    echo "<h1>".$film['name']." 3D</h1>";
-                }else{
-                    echo "<h1>".$film['name']."</h1>";
-                }
+            echo "<div class='film-info'>";
+            echo "<img id='film-logo' src=  /files/photos/".$film['logo']." width=300><br>";
 
-                echo "<table>";
-                echo "<tr><td class='td-info'>Возрастные ограничения</td><td>".$film['age']."+</td></tr>";
-                if ($film['genre']!=null){
-                    echo "<tr><td class='td-info'>Жанр</td><td>".$film['genre']."</td></tr>";
-                }
-                echo "<tr><td class='td-info'>Страна</td><td>".$film['country']."</td></tr>";
-                echo "<tr><td class='td-info'>Продолжительность фильма</td><td>".$film['length']." минут</td></tr>";
-                if ($film['role']!=null){
-                    echo "<tr><td class='td-info'>В ролях</td><td>".$film['role']."</td></tr>";
+            if ($film['format']=='3D'){
+                echo "<h1>".$film['name']." 3D</h1>";
+            }else{
+                echo "<h1>".$film['name']."</h1>";
+            }
+
+            echo "<table>";
+            echo "<tr><td class='td-info'>Возрастные ограничения</td><td>".$film['age']."+</td></tr>";
+            if ($film['genre']!=null){
+                echo "<tr><td class='td-info'>Жанр</td><td>".$film['genre']."</td></tr>";
+            }
+            echo "<tr><td class='td-info'>Страна</td><td>".$film['country']."</td></tr>";
+            echo "<tr><td class='td-info'>Продолжительность фильма</td><td>".$film['length']." минут</td></tr>";
+            if ($film['role']!=null){
+                echo "<tr><td class='td-info'>В ролях</td><td>".$film['role']."</td></tr>";
+            }
+            echo "</table>";
+
+            echo "<h2>Описание</h2>";
+            echo $film['description'];
+            echo "</div>";
+            $sessions = mysqli_query($connection,"SELECT * FROM session WHERE id_film='$id' AND date>=CURRENT_DATE()");
+
+
+            //получаем сеансы
+            if (mysqli_num_rows($sessions)!=null){
+                echo "<div id='session'>";
+                echo "<h2 id='sessions'>Сеансы</h2>";
+                echo "<table cellspacing='0' class='session'>";
+                echo "<tr>";
+                echo "<th class='table-th'>Дата</th>";
+                echo "<th class='table-th'>Время</th>";
+                echo "<th class='table-th'>Формат</th>";
+                echo "<th class='table-th'>Цена</th>";
+                echo "<th class='table-th'>Зал</th>";
+                echo "<th class='table-th'></th>";
+                echo "</tr>";
+                while ($session = mysqli_fetch_assoc($sessions)){
+                    $dateToday = date("d-m-Y");
+                    $timeNow = date("H:i:00");
+                    $date = $session['date'];
+                    $date = date('d-m-Y',strtotime($date));
+                    $timeStart = $session['time'];
+                    $time = $session['time'];
+                    $timeStart = date("H:i",strtotime($timeNow.' + 15 min'));
+
+
+
+                    //Сверяем, не устарел ли сеанс
+                    if ((strtotime($date)>strtotime($dateToday)) || ((strtotime($timeStart)<strtotime($time)) && (strtotime($date)==strtotime($dateToday)))){
+                        $hall = mysqli_query($connection,"SELECT name FROM hall WHERE id = ".$session['id_hall']);
+                        $id = $session['id'];
+                        $name = mysqli_fetch_row($hall);
+                        echo "<tr>";
+                        echo "<td class='table-td'>".$date."</td>";
+                        echo "<td class='table-td'>".substr($session['time'],0,5)."</td>";
+                        echo "<td class='table-td'>".$session['format']."</td>";
+                        echo "<td class='table-td'>".$session['price']." р.</td>";
+                        echo "<td class='table-td'>".$name[0]."</td>";
+                        echo "<td class='table-td'><a href='/booking/?session=$id'><div class='buy-ticket'>Купить</div></a></td></tr>";
+                    }
+
+
                 }
                 echo "</table>";
 
-                echo "<h2>Описание</h2>";
-                echo $film['description'];
-                echo "<h2 id='sessions'>Сеансы</h2>";
-                $sessions = mysqli_query($connection,"SELECT * FROM session WHERE id_film=$id");
-                //получаем сеансы
-                if (mysqli_num_rows($sessions)!=null){
-                    while ($session = mysqli_fetch_assoc($sessions)){
-                        $dateToday = date("Y-m-d");
-                        $timeNow = date("H:i:00");
-                        if ($session['date']==$dateToday){
-                            //echo date('H:i:00')."<br>";
-                            $hall = mysqli_query($connection,"SELECT name FROM hall WHERE id = ".$session['id_hall']);
-                            $name = mysqli_fetch_row($hall);
-                            if (strtotime($session['time']) > (strtotime($timeNow)+1800)){
-                                echo $name[0]." ". $session['format']." ". substr($session['time'],0,5);
-                                echo "<hr>";
+            }else echo "<h2>Сеансов нет</h2>";
+            echo "</div>";
+        }else{
+
+        }
+    } else if(empty($_GET)){
+    //показываем все фильмы
+        ?>
+
+        <h1>В прокате</h1>
+        <div class="film_list">
+                <?php
+
+                $maxShowFilm = 3;
+
+                $sessionsToday = mysqli_query($connection,"SELECT * FROM session");
+                if (mysqli_num_rows($sessionsToday)==0){
+                    echo "Сегодня сеансов нет.";
+                }
+                else {
+                    $usedFilms = array();//записываем в массив фильмы без повторений
+                    //гвнкд
+                    while ($session = mysqli_fetch_assoc($sessionsToday)) {
+                        $id_film = $session['id_film'];
+                        if ($usedFilms[$id_film] == false) {
+                            $usedFilms[$id_film] = true;
+                            if (count($usedFilms)>$maxShowFilm){
+                                //Если количество фильмов больше чем можно показать
+                                echo "<div style='margin: auto; width: 20%;'><a href='/films' class='button-info'>Больше фильмов</a></div>";
+                                break;
                             }
+                            $filmQuery = mysqli_query($connection, "SELECT * FROM film WHERE id=$id_film");
+                            $film = mysqli_fetch_assoc($filmQuery);
+                            ?>
+                            <div class="film-item" id="<?echo 'film-item-'.$film["id"]?>"
+                                 onmouseover="showItem(id)" onmouseout="hideItem(id)"
+                                 style="background: url(<?php echo '/files/photos/'.$film['logo']; ?>); background-size: 100%;">
+
+                                <div class="layout-film-item" style="visibility: hidden; width: 267px; height: 380px;
+                                color: white; background-color:rgba(0,0,0,.5);" id="<?echo 'layout-film-item-'.$film["id"]?>">
+                                    <div style="width: 237px; height: 350px; padding: 25px; ">
+                                        <div class="filmName"><?=$film['name']?></div>
+                                        <div class="filmAge"><?=$film['age']?>+</div>
+                                        <div><a href="/films/?id=<?=$film['id']?>" class="button-info">Подробнее</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
                         }
                     }
-
-                }else echo "Сегодня сеансов нет";
-                echo "</div>";
-            }
-        }
+                }
     }
 
     ?>
-</div>
+    </div>
 </div>
 
 <?include "../includes/footer.php";?>

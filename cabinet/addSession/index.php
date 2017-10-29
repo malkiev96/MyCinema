@@ -15,7 +15,7 @@ if ($user==null) header('Location: /login.php');
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="/includes/css/style.css">
-    <link rel="stylesheet" href="../includes/css/style-modal.css">
+    <link rel="stylesheet" href="/includes/css/style-modal.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <style>
         label,input{
@@ -27,13 +27,15 @@ if ($user==null) header('Location: /login.php');
 </head>
 <body>
 <?include "../../includes/header.php";?>
-<div id="content">
+<div class="main">
+    <div class="container">
     <h1>Добавить сеанс</h1>
     <?php
 
 
 
     if ($user['role_id']==3){
+
         if ($_POST){
             $film_id = $_POST['film_id'];
             $hall_id = $_POST['hall_id'];
@@ -42,17 +44,47 @@ if ($user==null) header('Location: /login.php');
             $price = $_POST['price'];
             $format = $_POST['format'];
 
-            if (!empty($film_id) && !empty($hall_id) && !empty($date) && !empty($time) && !empty($price) && $price>=0){
+            $dateNow = date('Y-m-d');
+
+            //валидация формы
+            if (!empty($film_id) && !empty($hall_id) && !empty($date) && !empty($time) && !empty($price) && $price>=0 && $date>=$dateNow){
+
+                //проверка значений в базе данных
+                $films_query = mysqli_query($connection,"SELECT * FROM film WHERE id = ".$film_id);
+                $halls_query = mysqli_query($connection,"SELECT * FROM hall WHERE id = ".$hall_id);
+
+                $film = mysqli_fetch_assoc($films_query);
+                $hall = mysqli_fetch_assoc($halls_query);
+
+                $is3D = false;//проверяем возможность 3D в выбранном зале
                 if ($format!=null){
+                    $is3D = true;
                     $format = '3D';
-                } else $format = '2D';
+                } else {
+                    $format = '2D';
+                    $is3D = false;
+                }
 
-                //$time = $date("H-i",$time);
-
-                mysqli_query($connection,"INSERT INTO session (id_film, id_hall, date, time, price, format) VALUES ('$film_id','$hall_id','$date','$time','$price','$format')");
+                if ($film['id']==$film_id && $hall['id']==$hall_id){
 
 
-            }
+
+                    $timeEnd = date('H:i',strtotime($time." + ".$film['length']." min"));
+
+                    //проверяем, нет ли сеансов в выбранное время
+                    $dateBd = date('Y-m-d',strtotime($date));
+                    $session_query = mysqli_query($connection,"SELECT * FROM session WHERE id_hall='$hall_id' AND date = '$dateBd' AND time = t$timeime");// AND time >= '$time' AND time <= '$timeEnd'
+                    $ses = mysqli_fetch_assoc($session_query);
+
+                    if ($ses==null){
+                        mysqli_query($connection,"INSERT INTO session (id_film, id_hall, date, time, price, format) VALUES ('$film_id','$hall_id',d$dateate,t$timeime,'$price','$format')");
+
+                    }else{
+                        //в данное время есть сеанс
+                        echo "<p style='color: red'>В выбранное время зал занят</p>";
+                    }
+                } else echo "<p style='color: red'>Ошибка валидации формы 1</p>";
+            } else echo "<p style='color: red'>Ошибка валидации формы 2</p>";
         }
 
 
@@ -109,6 +141,7 @@ if ($user==null) header('Location: /login.php');
     }else print "Access denied";
 
     ?>
+</div>
 </div>
 
 <?include "../../includes/footer.php";?>

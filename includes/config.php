@@ -23,11 +23,18 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])){
         $user = array(
             'id' => $user_data['user_id'],
             'login' => $user_data['user_login'],
-            'role_id' => $user_roles['role_id']
+            'role_id' => $user_roles['role_id'],
+            'name' => $user_data['user_name']
         );
     }
+}
 
-
-
+//проверяем неоплаченные билеты и удаляем записи
+$timeNow = date('H:i:s');
+$dateNow = date('Y-m-d');
+$timeStart = date("H:i:s",strtotime($timeNow.' - 10 min'));
+$ticketMysqli = mysqli_query($connection,"SELECT id FROM ticket WHERE isPay=0 AND dateBooking='$dateNow' AND time_to_sec(timeBooking)<time_to_sec('$timeStart')");
+while ($id = mysqli_fetch_assoc($ticketMysqli)){
+    mysqli_query($connection,"DELETE FROM ticket WHERE id = ".$id['id']);
 }
 

@@ -9,7 +9,7 @@
                 echo "<a class='textHref' href='#signup'>Регистрация</a>";
 
             }else{
-                echo "<a class='textHref' href='/cabinet'>Личный кабинет</a>";
+                echo "<a style='font-size: 1.1em' class='textHref' href='/cabinet'>".$user['login']."</a>";
             }
             ?>
         </div>
@@ -21,7 +21,7 @@
         <div class="header-navigation">
             <ul>
                 <li><a href="/">Главная</a></li>
-                <li><a href="/">Фильмы</a></li>
+                <li><a href="/films">Фильмы</a></li>
                 <li><a href="/">Новости</a></li>
             </ul>
         </div>

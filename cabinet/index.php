@@ -21,17 +21,21 @@ if ($user!=null){
 </head>
 <body>
 <?include "../includes/header.php";?>
-<div id="content">
-    <h1>Кабинет</h1>
-    <div>
-    <?php
-    if ($user['role_id']==3){
-        echo "<a href='addFilm'>Добавить новый фильм</a><br>";
-        echo "<a href='addSession'>Добавить новый сеанс</a>";
-    }
+<div class="main">
+    <div class="container">
+        <h1>Личный кабинет</h1>
+        <div>
+            <?php
+            echo "<h3>Привет, ".$user['name']."</h3>";
 
+            if ($user['role_id']==3){
+                echo "<a class='textHref' href='addFilm'>Добавить новый фильм</a><br>";
+                echo "<a class='textHref' href='addSession'>Добавить новый сеанс</a><br>";
+            }
 
-    ?>
+            echo "<a class='textHref' href='/exit.php'>Выход</a>";
+            ?>
+    </div>
     </div>
 </div>
 
