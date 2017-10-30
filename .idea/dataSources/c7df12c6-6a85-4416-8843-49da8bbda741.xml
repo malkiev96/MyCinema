@@ -302,19 +302,19 @@
       <DataType>tinyint(1)|0</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <column id="77" parent="15" name="lastname">
+    <column id="77" parent="15" name="timePay">
       <Position>9</Position>
-      <DataType>varchar(64)|0</DataType>
-    </column>
-    <column id="78" parent="15" name="firstname">
-      <Position>10</Position>
-      <DataType>varchar(64)|0</DataType>
-    </column>
-    <column id="79" parent="15" name="timePay">
-      <Position>11</Position>
       <DataType>time|0</DataType>
     </column>
-    <column id="80" parent="15" name="price">
+    <column id="78" parent="15" name="price">
+      <Position>10</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="79" parent="15" name="mail">
+      <Position>11</Position>
+      <DataType>varchar(64)|0</DataType>
+    </column>
+    <column id="80" parent="15" name="payId">
       <Position>12</Position>
       <DataType>int(11)|0</DataType>
     </column>

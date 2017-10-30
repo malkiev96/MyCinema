@@ -17,6 +17,8 @@ $seats = $_SESSION['pay']['seats_id'];
 $hashMas = $_SESSION['pay']['hash'];
 $timeNow = date('H:i:s');
 
+$payId = $_SESSION['pay']['pay_id'];
+
 if((strtotime($timeNow)-strtotime($time)>=600)){
     header('Location:/');
 }
@@ -37,7 +39,6 @@ if($user_id=='guest') $user_id = 0;
         button{
             cursor: pointer;
         }
-
         input:focus{
             outline: 0;
             outline-offset: 0;
@@ -91,7 +92,7 @@ if($user_id=='guest') $user_id = 0;
 
         //бронируем места
         for ($i = 0; $i<count($hashMas); $i++){
-            $ticketSQL = mysqli_query($connection,"INSERT INTO ticket(id, id_session, id_place, id_user, dateBooking, timeBooking, isStudent, isPay, lastname, firstname, timePay, price) VALUES('$hashMas[$i]','$session_id','$seats[$i]','$user_id','$date','$time','0','0','','','','$priceMas[$i]')");
+            $ticketSQL = mysqli_query($connection,"INSERT INTO ticket(id, id_session, id_place, id_user, dateBooking, timeBooking, isStudent, isPay,timePay, price,mail,payId) VALUES('$hashMas[$i]','$session_id','$seats[$i]','$user_id','$date','$time','0','0','','$priceMas[$i]','','$payId')");
         }
 
 
@@ -137,10 +138,12 @@ if($user_id=='guest') $user_id = 0;
 <!--                    <form method="post" name="payForm">-->
                         <div id="divCart">
                         <h4>Банковская карта</h4>
-                        <div><input type="text" id="formNumber" name="number" placeholder="Введите номер карты"></div>
+                        <div><input type="text" id="formNumber" name="number" maxlength="14" placeholder="Введите номер карты"></div>
                         <div>
-                            <input type="text" id="formYear" name="year" placeholder="ММ/ГГ">
-                            <input type="text" id="formCVC" name="cvc" placeholder="CVC">
+                            <input type="text" id="formMonth" name="month" maxlength="2" placeholder="ММ">
+                            <span>/</span>
+                            <input type="text" id="formYear" name="year" maxlength="2" placeholder="ГГ">
+                            <input type="text" id="formCVC" name="cvc" maxlength="3" placeholder="CVC">
                         </div>
                         <button class="button-info" id="buttonPay" style="width: 350px">Оплатить <?=$price?> &#8381;</button>
                         </div>
@@ -178,22 +181,21 @@ if($user_id=='guest') $user_id = 0;
     var timer;
     $(document).ready(function () {
        countSeat();
+       delInputError();
 
        $('#button-email').click(function () {
            postMail();
        });
-        
-
        $('#buttonPay').click(function () {
            postCard();
        });
-
        timer = setInterval(showTime, 1000); // использовать функцию
     });
 
 
     function postCard() {
         var number = $('#formNumber').val();
+        var month = $('#formMonth').val();
         var year = $('#formYear').val();
         var cvc = $('#formCVC').val();
 
@@ -202,28 +204,71 @@ if($user_id=='guest') $user_id = 0;
             type: 'POST',
             data: {
                 number: number,
+                month: month,
                 year: year,
                 cvc: cvc
             },
             success: function (data) {
                 console.log(data);
-            }
-        });
-    }
-
-
-    function postMail() {
-        var mail = $('#input-email').val();
-        $.ajax({
-            url: 'mail.php',
-            type: 'POST',
-            data: 'mail='+mail,
-            success: function (data) {
-                if (data=='error'){
-                    $('#input-email').css({
+                if (data=='number'){
+                    $('#formNumber').css({
+                       border: 'solid 2px #c00107'
+                   });
+                }else if (data=='month'){
+                    $('#formMonth').css({
                         border: 'solid 2px #c00107'
                     });
-                    $('#input-email').attr('placeholder','Некоректный e-mail');
+                }else if (data=='year'){
+                    $('#formYear').css({
+                        border: 'solid 2px #c00107'
+                    });
+                }else if (data=='cvc'){
+                    $('#formCVC').css({
+                        border: 'solid 2px #c00107'
+                    });
+                }else if (data=='ok'){
+                    console.log(data);
+                    window.location.href = '/booking/ticket';
+                }
+           }
+       });
+   }
+
+   function delInputError() {
+        $('#formNumber').change(function () {
+            $('#formNumber').css({
+                border: 'groove 2px'
+            });
+        });
+       $('#formMonth').change(function () {
+           $('#formMonth').css({
+               border: 'groove 2px'
+           });
+       });
+       $('#formYear').change(function () {
+           $('#formYear').css({
+               border: 'groove 2px'
+           });
+       });
+       $('#formCVC').change(function () {
+           $('#formCVC').css({
+               border: 'groove 2px'
+           });
+       });
+   }
+
+   function postMail() {
+       var mail = $('#input-email').val();
+       $.ajax({
+           url: 'mail.php',
+           type: 'POST',
+           data: 'mail='+mail,
+           success: function (data) {
+               if (data=='error'){
+                   $('#input-email').css({
+                       border: 'solid 2px #c00107'
+                   });
+                   $('#input-email').attr('placeholder','Некоректный e-mail');
 
                 }else {
                     $('#enter-email').html('');
@@ -261,6 +306,9 @@ if($user_id=='guest') $user_id = 0;
         if (i==0 && s==0){
             timeOut = true;
             clearInterval(timer);
+            $('.seat-view').text("Время для оплаты истекло");
+
+
         }
         $('#timeI').text(i);
         $('#timeS').text(s);

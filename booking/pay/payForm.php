@@ -28,7 +28,7 @@ if ($_POST){
             $assoc = mysqli_fetch_assoc($mysqliPlace);
             if ($seat == $assoc['seat'] && $row==$assoc['row']){
                 $mySeats[]= $assoc['id'];
-                $myHash[] = rand(1000,9999);
+                $myHash[] = rand(100000000,999999999);
             }else{
                 header('Location: /index.php');
             }
@@ -44,6 +44,8 @@ if ($_POST){
         $_SESSION['pay']['time'] = date('H:i:s');
         $_SESSION['pay']['hash'] = $myHash;
         $_SESSION['pay']['date'] = date('Y-m-d');
+        $myPayId = rand(100000000,999999999);
+        $_SESSION['pay']['pay_id'] = $myPayId;
 
         header('Location: /booking/pay');
 

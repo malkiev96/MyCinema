@@ -1,15 +1,14 @@
 <?php
 
-require "../../includes/config.php";
-require "../../includes/uploadFile.php";
 
+require_once "../../includes/config.php";
 
-if ($user==null) header('Location: /login.php');
-
+if ($user==null && $user['role_id']!=3) {
+    print("Access denied");
+    exit();
+}
 
 ?>
-
-
 
 <!doctype html>
 <html lang="en">
@@ -20,10 +19,10 @@ if ($user==null) header('Location: /login.php');
     <link rel="stylesheet" href="/includes/css/style-modal.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <style>
-        label{
-            display: inline-block;
-            width: 200px;
-            text-align: left;
+        input{
+            width: 25%;
+            padding: 5px;
+
         }
     </style>
 </head>
@@ -32,137 +31,129 @@ if ($user==null) header('Location: /login.php');
 <div class="main">
     <div class="container">
 
-        <?php
+        <h1>Добавить фильм</h1>
 
-        function clean($value = "") {
-            $value = trim($value);
-            $value = stripslashes($value);
-            $value = strip_tags($value);
-            $value = htmlspecialchars($value);
+        <form method="post" action="form.php" id="formFilm" enctype="multipart/form-data">
+            <div class="label">Название фильма</div>
+            <div><input type="text" id="name" name="name"></div>
 
-            return $value;
-        }
+            <div class="label">Краткое описание фильма</div>
+            <div><input type="text" id="description" name="description"></div>
 
-        if ($user['role_id']==3){
-            if ($_POST){
+            <div class="label">Жанр фильма</div>
+            <div><input type="text" id="genre" name="genre"></div>
 
-                $name = $_POST['name'];
-                $description = $_POST['description'];
-                $genre = $_POST['genre'];
-                $role = $_POST['role'];
-                $country = $_POST['country'];
-                $year = $_POST['year'];
-                $age = $_POST['age'];
-                $length = $_POST['length'];
-                $dateStart = $_POST['dateStart'];
-                $dateStop = $_POST['dateStop'];
-                $format = $_POST['format'];
-                $trailer = $_POST['trailer'];
+            <div class="label">В ролях</div>
+            <div><input type="text" id="role" name="role"></div>
 
+            <div class="label">Страна фильма</div>
+            <div><input type="text" id="country" name="country"></div>
 
-                if (!empty($name) &&
-                    !empty($description) &&
-                    !empty($age) &&
-                    !empty($length) &&
-                    !empty($dateStart) &&
-                    !empty($dateStop) &&
-                    $dateStart<$dateStop) {
+            <div class="label">Год фильма</div>
+            <div><input type="text" id="year" name="year"></div>
 
+            <div class="label">Возрастное ограничение</div>
+            <div><input type="text" id="age" name="age"></div>
 
-                    if ($format != null) {
-                        $format = "3D";
-                    } else $format = "2D";
-                    if ($year == null) $year = date("Y");
+            <div class="label">Продолжительность фильма, мин</div>
+            <div><input type="text" id="length" name="length"></div>
 
-                    if (isset($_FILES['logo'])){
-                        $result = upload_file($_FILES['logo']);
-                        if(isset($result['error'])){
-                            echo "<p style='color: red'>Ошибка валидации формы 1</p>";
-                        }else{
-                            $logo = $result['filename'];
-                            mysqli_query($connection, "INSERT INTO film(name, description, year, country, format, length, age, dateStart, dateStop, genre, role, logo, trailer) VALUES ('$name','$description','$year','$country','$format','$length','$age','$dateStart','$dateStop','$genre','$role','$logo','$trailer')");
-                            echo "<p style='color: green; padding-top: 25px'>Фильм успешно добавлен</p>";
-                        }
-                    }else {
-                        echo "<p style='color: red'>Ошибка валидации формы 2</p>";
-                    }
+            <div class="label">Дата выхода в прокат</div>
+            <div><input type="date" id="dateStart" name="dateStart"></div>
 
-                } else echo "<p style='color: red'>Ошибка валидации формы 3</p>";
-            }
+            <div class="label">Дата конца проката</div>
+            <div><input type="date" id="dateStop" name="dateStop"></div>
 
+            <div class="label">Фильм доступен в 3D?</div>
+            <div><input type="checkbox" id="format" name="format"></div>
 
-            ?>
+            <div class="label">Картинка к фильму</div>
+            <div><input type="file" id="logo" name="logo"></div>
 
-
-            <h1>Добавить фильм</h1>
-            <form method="post" action="index.php" enctype="multipart/form-data">
-                <p>
-                    <label for="name">Название фильма</label>
-                    <input type="text" id="name" name="name">
-                </p>
-                <p>
-                    <label for="description">Краткое описание фильма</label>
-                    <input type="text" id="description" name="description">
-                </p>
-                <p>
-                    <label for="genre">Жанр фильма</label>
-                    <input type="text" id="genre" name="genre">
-                </p>
-                <p>
-                    <label for="role">В ролях</label>
-                    <input type="text" id="role" name="role">
-                </p>
-                <p>
-                    <label for="country">Страна фильма</label>
-                    <input type="text" id="country" name="country">
-                </p>
-                <p>
-                    <label for="year">Год фильма</label>
-                    <input type="text" id="year" name="year">
-                </p>
-                <p>
-                    <label for="age">Возрастное ограничение</label>
-                    <input type="text" id="age" name="age">
-                </p>
-                <p>
-                    <label for="length">Продолжительность фильма в минутах</label>
-                    <input type="text" id="length" name="length">
-                </p>
-                <p>
-                    <label for="dateStart">Дата выхода в прокат</label>
-                    <input type="date" id="dateStart" name="dateStart">
-                </p>
-                <p>
-                    <label for="dateStop">Дата конца проката</label>
-                    <input type="date" id="dateStop" name="dateStop">
-                </p>
-                <p>
-                    <label for="format">Фильм в 3D?</label>
-                    <input type="checkbox" id="format" name="format">
-                </p>
-                <p>
-                    <label for="logo">Картинка к фильму</label>
-                    <input type="file" id="logo" name="logo">
-                </p>
-                <p>
-                    <label for="trailer">HTML код трейлера</label>
-                    <input type="text" id="trailer" name="trailer">
-                </p>
-                <p>
-                    <button type="submit">Добавить</button>
-                </p>
-
-
-            </form>
-            <?php
-
-        }else print "Access denied";
-
-        ?>
+            <div><button class="button-info" id="formButton" type="button">Добавить</button></div>
+        </form>
     </div>
 </div>
 
 <?include "../../includes/footer.php";?>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#formButton').click(function () {
+            validateForm();
+        });
+
+        $('input').keyup(function () {
+            $(this).css({
+                borderWidth: '2px',
+            borderStyle: 'inset',
+            borderColor: 'initial',
+            borderImage: 'initial'
+            })
+        });
+
+    });
+    
+    function validateForm() {
+        var name = $('#name').val();
+        var description = $('#description').val();
+        var genre = $('#genre').val();
+        var role = $('#role').val();
+        var country = $('#country').val();
+        var year = $('#year').val();
+        var age = $('#age').val();
+        var length = $('#length').val();
+        var dateStart = $('#dateStart').val();
+        var dateStop = $('#dateStop').val();
+        var format = $('#dateStop').val();
+        var logo = $('#logo').val();
+        if (name=="") inputError('#name');
+        else if (description=="") inputError('#description');
+        else if (genre=="") inputError('#genre');
+        else if (role=="") inputError('#role');
+        else if (country=="") inputError('#country');
+        else if (year=="") inputError('#year');
+        else if (age=="") inputError('#age');
+        else if (length=="") inputError('#length');
+        else if (dateStart=="") inputError('#dateStart');
+        else if (dateStop=="") inputError('#dateStop');
+        else {
+
+            $('#formFilm').submit();
+            /*$.ajax({
+                url: 'form.php',
+                type: 'POST',
+                data:{
+                    name: name,
+                    description: description,
+                    genre: genre,
+                    role: role,
+                    country: country,
+                    year: year,
+                    age: age,
+                    length: length,
+                    dateStart: dateStart,
+                    dateStop: dateStop,
+                    format: format,
+                    logo: logo
+                },
+                success: function (data) {
+                    console.log(data);
+                }
+            })*/
+        }
+
+        
+    }
+    
+    function inputError(input) {
+        $(input).css({
+            border: 'solid 2px #c00107'
+        });
+    }
+
+</script>
 
 </body>
 </html>

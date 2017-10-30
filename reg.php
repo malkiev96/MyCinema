@@ -1,6 +1,8 @@
 <?php
 require "includes/config.php";
 
+if ($user!=null) header('Location: /');
+
 // Страница регистрации нового пользователя
 
 function generateCode($length=6) {
@@ -33,16 +35,35 @@ if($_POST) {
         $err[] = "Пользователь с таким логином уже существует в базе данных";
     }
 
+    if(strlen($_POST['password']) < 4 or strlen($_POST['password']) > 30)
+    {
+        $err[] = "Пароль должен быть не меньше 4-х символов и не больше 30";
+    }
+
+    if(strlen($_POST['firstname']) < 3 or strlen($_POST['lastname']) > 30)
+    {
+        $err[] = "Введите имя";
+    }
+
+    if(strlen($_POST['lastname']) < 3 or strlen($_POST['lastname']) > 30)
+    {
+        $err[] = "Введите фамилию";
+    }
+
+
+
     // Если нет ошибок, то добавляем в БД нового пользователя
     if(count($err) == 0)
     {
 
         $login = $_POST['login'];
+        $firstname = $_POST['firstname'];
+        $lastname = $_POST['lastname'];
 
         // Убераем лишние пробелы и делаем двойное шифрование
         $password = md5(md5(trim($_POST['password'])));
 
-        mysqli_query($connection,"INSERT INTO users SET user_login='$login', user_password='$password'");
+        mysqli_query($connection,"INSERT INTO users SET user_login='$login', user_password='$password', user_name='$firstname',user_lastname='$lastname'");
         $queryq = mysqli_query($connection,"SELECT user_id FROM users WHERE user_login='$login'");
         $user_id = mysqli_fetch_assoc($queryq);
         $id = $user_id['user_id'];
@@ -86,35 +107,34 @@ if($_POST) {
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="includes/css/style.css">
+    <link rel="stylesheet" href="includes/css/style-modal.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <style>
-        span{
-            width: 150px;
-            display: inline-block;
-            font-weight: bold;
-            padding: 5px 5px 5px 0;
+        input{
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 <?include "includes/header.php";?>
 
-<div id="content">
+<div class="main">
+    <div class="container">
     <h1>Регистрация</h1>
     <form method="POST">
-        <div>
-            <span>Логин: </span>
-            <span><input style="font: inherit; font-weight: normal; padding: 5px"  name="login" placeholder="login" type="text"></span>
-        </div>
-        <div>
-            <span>Пароль: </span>
-            <span><input style="font: inherit; font-weight: normal; padding: 5px" name="password" type="password"></span>
-        </div>
-        <div style="display: inline-block; margin-right: 15px">
-            <button style="cursor: pointer" class="button-red" type="submit">Войти</button>
-        </div>
+            <div>Логин: </div>
+            <div><input style="font: inherit; font-weight: normal; width: 193px; padding: 5px"  name="login" placeholder="login" type="text"></div>
+            <div>Имя: </div>
+            <div><input style="font: inherit; font-weight: normal; width: 193px; padding: 5px"  name="firstname" placeholder="firstname" type="text"></div>
+            <div>Фамилия: </div>
+            <div><input style="font: inherit; font-weight: normal; width: 193px; padding: 5px"  name="lastname" placeholder="lastname" type="text"></div>
+            <div>Пароль: </div>
+            <div><input style="font: inherit; font-weight: normal; width: 193px; padding: 5px" name="password" type="password" placeholder="password"></div>
+            <button style="cursor: pointer; margin-top: 5px;" class="button-info" type="submit">Войти</button>
     </form>
+    </div>
 </div>
-
 <?include "includes/footer.php";?>
 </body>
 </html>

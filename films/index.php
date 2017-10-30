@@ -65,7 +65,7 @@
             echo "<h2>Описание</h2>";
             echo $film['description'];
             echo "</div>";
-            $sessions = mysqli_query($connection,"SELECT * FROM session WHERE id_film='$id' AND date>=CURRENT_DATE()");
+            $sessions = mysqli_query($connection,"SELECT * FROM session WHERE id_film='$id' AND date=CURRENT_DATE() AND time>=CURRENT_TIME() OR date>CURRENT_DATE() AND id_film='$id'");
 
 
             //получаем сеансы
@@ -80,6 +80,9 @@
                 echo "<th class='table-th'>Цена</th>";
                 echo "<th class='table-th'>Зал</th>";
                 echo "<th class='table-th'></th>";
+                if ($user['role_id']>=2){
+                    echo "<th class='table-th'></th>";
+                }
                 echo "</tr>";
                 while ($session = mysqli_fetch_assoc($sessions)){
                     $dateToday = date("d-m-Y");
@@ -103,7 +106,10 @@
                         echo "<td class='table-td'>".$session['format']."</td>";
                         echo "<td class='table-td'>".$session['price']." р.</td>";
                         echo "<td class='table-td'>".$name[0]."</td>";
-                        echo "<td class='table-td'><a href='/booking/?session=$id'><div class='buy-ticket'>Купить</div></a></td></tr>";
+                        echo "<td class='table-td'><a href='/booking/?session=$id'><div class='buy-ticket'>Купить</div></a></td>";
+                        if ($user['role_id']>=2){
+    echo "<td class='table-td'><a href='/films/seats.php?session=$id'><div class='buy-ticket'>Просмотр</div></a></td></tr>";
+                        }
                     }
 
 
@@ -123,8 +129,6 @@
         <div class="film_list">
                 <?php
 
-                $maxShowFilm = 3;
-
                 $sessionsToday = mysqli_query($connection,"SELECT * FROM session");
                 if (mysqli_num_rows($sessionsToday)==0){
                     echo "Сегодня сеансов нет.";
@@ -136,11 +140,6 @@
                         $id_film = $session['id_film'];
                         if ($usedFilms[$id_film] == false) {
                             $usedFilms[$id_film] = true;
-                            if (count($usedFilms)>$maxShowFilm){
-                                //Если количество фильмов больше чем можно показать
-                                echo "<div style='margin: auto; width: 20%;'><a href='/films' class='button-info'>Больше фильмов</a></div>";
-                                break;
-                            }
                             $filmQuery = mysqli_query($connection, "SELECT * FROM film WHERE id=$id_film");
                             $film = mysqli_fetch_assoc($filmQuery);
                             ?>

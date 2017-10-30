@@ -55,7 +55,7 @@ li{
     float: left;
 }
 
-li a{
+li.li-navigation a{
     display: block;
     color: #767f88;
     text-align: center;
@@ -64,8 +64,8 @@ li a{
     text-decoration: none;
 }
 
-li a:hover{
-    background-color: #c00107;
+li.li-navigation a:hover{
+    background-color: #FFA500;
     color: #fefefe;
 }
 
@@ -163,11 +163,6 @@ a:hover.textHref  {
     margin-top: 10px;
 }
 
-input{
-    border-top: solid 1px;
-    padding: 5px;
-    min-width: 40%;
-}
 
 
 .button-close{
@@ -178,17 +173,6 @@ input{
     cursor: pointer;
 }
 
-button.login{
-    padding: 10px;
-    color: #fefefe;
-    background-color: #35aa47;
-    border: solid 1px #35aa47;
-    cursor: pointer;
-}
-
-button.login:hover{
-    background-color: #2e9340;
-}
 
 .session-info{
     width: 100%;
@@ -225,5 +209,7 @@ td{
 }
 
 
-
-
+img#myLogo{
+    height: 65px;
+    margin-right: 10px;
+}

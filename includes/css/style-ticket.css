@@ -1,0 +1,47 @@
+.ticket{
+    width: 500px;
+    height: 220px;
+    border: solid 2px #a8b0ba;
+}
+
+#qr{
+    width: 100px;
+    border-right: solid 2px #a8b0ba;
+    display: inline-block;
+    height: 100%;
+    float: left;
+}
+
+#qr img{
+    width: 100px;
+}
+
+.number{
+    width: 375px;
+    border-bottom: solid 2px #a8b0ba;
+    padding: 10px 10px 10px 115px;
+}
+
+#numberInfo{
+    font-size: 1.3em;
+    color: #616b76;
+    padding-bottom: 5px;
+}
+#number{
+    font-weight: lighter;
+    font-size: 2.5em;
+    color: #262626;
+}
+
+#info{
+    padding: 10px 10px 10px 115px;
+    width: 375px;
+}
+
+.info{
+    color: #616b76;
+}
+.info-val{
+    color: #262626;
+    font-size: 1.1em;
+}

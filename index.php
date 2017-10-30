@@ -29,9 +29,9 @@
         <div class="film_list">
                 <?php
 
-                $maxShowFilm = 3;
+                $maxShowFilm = 4;
 
-                $sessionsToday = mysqli_query($connection,"SELECT * FROM session WHERE date=CURRENT_DATE()");
+                $sessionsToday = mysqli_query($connection,"SELECT * FROM session WHERE date=CURRENT_DATE() AND time>CURRENT_TIME()");
                 if (mysqli_num_rows($sessionsToday)==0){
                     echo "Сегодня сеансов нет.";
                 }
@@ -82,7 +82,7 @@
                 $id_film = $session['id_film'];
 
                 //Проверяем, нет ли показа фильма сегодня, и если есть, не показываем в скором прокате
-                $filmQuery = mysqli_query($connection, "SELECT id FROM session WHERE id_film = '$id_film' AND date=CURRENT_DATE()");
+                $filmQuery = mysqli_query($connection, "SELECT id FROM session WHERE id_film = '$id_film' AND date=CURRENT_DATE() AND time>CURRENT_TIME()");
 
                 if ($usedFilms[$id_film] == false && mysqli_num_rows($filmQuery)==0) {
                     $usedFilms[$id_film] = true;

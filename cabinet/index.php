@@ -27,8 +27,14 @@ if ($user!=null){
         <div>
             <?php
             echo "<h3>Привет, ".$user['name']."</h3>";
+            if ($user['role_id']==1){
+                echo "<h4>Вы вошли как пользователь</h4>";
+            }elseif ($user['role_id']==2){
+                echo "<h4>Вы вошли как сотрудник</h4>";
+            }
 
             if ($user['role_id']==3){
+                echo "<h4>Вы вошли как администратор</h4>";
                 echo "<a class='textHref' href='addFilm'>Добавить новый фильм</a><br>";
                 echo "<a class='textHref' href='addSession'>Добавить новый сеанс</a><br>";
             }

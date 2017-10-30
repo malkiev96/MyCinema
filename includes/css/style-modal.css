@@ -30,9 +30,7 @@ right: 0;
 left: 50%;
 z-index: 10000;
 margin: 0 auto;
-width: 100%;
-min-width: 320px;
-max-width: 620px;
+width: 350px;
 /* фиксированное позиционирование, окно стабильно при прокрутке */
 position: fixed;
 padding: 15px;
@@ -59,6 +57,7 @@ transition: transform 0.6s ease-out;
 /* активируем мод. окно */
 .overlay:target+.popup {
 top: 30%;
+	left: 25%;
 -webkit-transform: translate(-50%,-50%);
 -ms-transform: translate(-50%, -50%);
 -o-transform: translate(-50%, -50%);
@@ -118,4 +117,22 @@ padding: 10px;
 	.popup {
 		width:85%;
 	}
+}
+
+.inputLogin{
+	width: 93%;
+	padding: 10px;
+}
+
+button.login{
+	margin-top: 10px;
+	padding: 10px;
+	color: #fefefe;
+	background-color: #35aa47;
+	border: solid 1px #35aa47;
+	cursor: pointer;
+}
+
+button.login:hover{
+	background-color: #2e9340;
 }
