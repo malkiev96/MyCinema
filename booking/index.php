@@ -1,32 +1,107 @@
-<!doctype html>
-<html>
-<head>
-    <?php
-    require "../includes/config.php";
-    if ($_GET['session']==null){
+<?php
+require "../includes/config.php";
+if ($_GET['session']==null){
+    header('Location:/');
+}else{
+    $mysqliSession = mysqli_query($connection, "SELECT * FROM session WHERE id=".htmlspecialchars($_GET['session']));
+    $session = mysqli_fetch_assoc($mysqliSession);
+    if ($session['id']==null){
         header('Location:/');
-    }else{
-        $mysqliSession = mysqli_query($connection, "SELECT * FROM session WHERE id=".htmlspecialchars($_GET['session']));
-        $session = mysqli_fetch_assoc($mysqliSession);
-        $dateTime = date('d.m.Y',strtotime($session['date'])). " ". date('H:i',strtotime($session['time']));
+    }
 
-        $mysqliFilm = mysqli_query($connection,"SELECT * FROM film WHERE id=".$session['id_film']);
-        $film = mysqli_fetch_assoc($mysqliFilm);
+    $dateTime = date('d.m.Y',strtotime($session['date'])). " ". date('H:i',strtotime($session['time']));
 
-        $mysqliPlace = mysqli_query($connection,"SELECT * FROM place WHERE Id_hall=".$session['id_hall']);
+    $mysqliFilm = mysqli_query($connection,"SELECT * FROM film WHERE id=".$session['id_film']);
+    $film = mysqli_fetch_assoc($mysqliFilm);
 
-        if ($session['id']==null){
-            header('Location:/');
+    $mysqliPlace = mysqli_query($connection,"SELECT * FROM place WHERE Id_hall=".$session['id_hall']);
+
+    $mysqliType = mysqli_query($connection, "SELECT * FROM type WHERE id=4");
+    $type = mysqli_fetch_assoc($mysqliType);
+    $discount = $type['coef'];
+
+    $mysqliType = mysqli_query($connection, "SELECT * FROM type");
+    while ($type = mysqli_fetch_assoc($mysqliType)){
+        if ($type['id']==1){
+            $placeDiscount[1] = $type['coef'];
+        }
+        if ($type['id']==2){
+            $placeDiscount[2] = $type['coef'];
+        }
+        if ($type['id']==3){
+            $placeDiscount[3] = $type['coef'];
         }
     }
 
-    ?>
+
+}
+
+?>
+<!doctype html>
+<html>
+<head>
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="../includes/css/style.css">
     <link rel="stylesheet" href="../includes/css/style-modal.css">
     <link rel="stylesheet" href="../includes/css/style-booking.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        .checkbox + label {
+            cursor: pointer;
+        }
+
+        /* Далее идет оформление чекбокса в современных браузерах, а также IE9 и выше.
+        Благодаря тому, что старые браузеры не поддерживают селекторы :not и :checked,
+        в них все нижеследующие стили не сработают. */
+
+        /* Прячем оригинальный чекбокс. */
+        .checkbox:not(checked) {
+            position: absolute;
+            opacity: 0;
+        }
+        .checkbox:not(checked) + label {
+            position: relative; /* будем позиционировать псевдочекбокс относительно label */
+            padding: 0 0 0 60px; /* оставляем слева от label место под псевдочекбокс */
+        }
+        /* Оформление первой части чекбокса в выключенном состоянии (фон). */
+        .checkbox:not(checked) + label:before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            width: 50px;
+            height: 26px;
+            border-radius: 13px;
+            background: #CDD1DA;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+        }
+        /* Оформление второй части чекбокса в выключенном состоянии (переключатель). */
+        .checkbox:not(checked) + label:after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            border-radius: 10px;
+            background: #FFF;
+            box-shadow: 0 2px 5px rgba(0,0,0,.3);
+            transition: all .2s; /* анимация, чтобы чекбокс переключался плавно */
+        }
+        /* Меняем фон чекбокса, когда он включен. */
+        .checkbox:checked + label:before {
+            background: #9FD468;
+        }
+        /* Сдвигаем переключатель чекбокса, когда он включен. */
+        .checkbox:checked + label:after {
+            left: 26px;
+        }
+        /* Показываем получение фокуса. */
+        .checkbox:focus + label:before {
+            box-shadow: 0 0 0 3px rgba(255,255,0,.5);
+        }
+    </style>
 </head>
 <body>
 <?include "../includes/header.php";?>
@@ -66,14 +141,14 @@
                                 $ticket = mysqli_fetch_assoc($mysqliTicket);
                                 if ($ticket['id']==null){
                                     if ($value['type']==1){
-                                        echo "<span class='has-seat econ-seat'  id='seat$seat-row$row' title='seat $seat row $row'></span>";
-                                        echo "<input type='text' hidden name='seat$seat-row$row' value='".$session['price']*0.8."'>";
+                                        echo "<span class='has-seat econ-seat'  id='seat$seat-row$row' title='".$session['price']*$placeDiscount[1]."rub seat $seat row $row'></span>";
+                                        echo "<input type='text' hidden name='seat$seat-row$row' value='".$session['price']*$placeDiscount[1]."'>";
                                     }else if ($value['type']==2){
-                                        echo "<span class='has-seat norm-seat' id='seat$seat-row$row' title='seat $seat row $row'></span>";
-                                        echo "<input type='text' hidden name='seat$seat-row$row' value='".$session['price']."'>";
+                                        echo "<span class='has-seat norm-seat' id='seat$seat-row$row' title='".$session['price']*$placeDiscount[2]."rub seat $seat row $row'></span>";
+                                        echo "<input type='text' hidden name='seat$seat-row$row' value='".$session['price']*$placeDiscount[2]."'>";
                                     }else if ($value['type']==3){
-                                        echo "<span class='has-seat vip-seat' id='seat$seat-row$row' title='seat $seat row $row'></span>";
-                                        echo "<input type='text' hidden name='seat$seat-row$row' value='".$session['price']*1.4."'>";
+                                        echo "<span class='has-seat vip-seat' id='seat$seat-row$row' title='".$session['price']*$placeDiscount[3]."rub seat $seat row $row'></span>";
+                                        echo "<input type='text' hidden name='seat$seat-row$row' value='".$session['price']*$placeDiscount[3]."'>";
                                     }
                                 }else{
                                     echo "<span class='lock-seat'></span>";
@@ -85,6 +160,7 @@
                 }
                 ?>
             </div>
+
         </div>
         <div class="seat-film">
             <?php
@@ -104,6 +180,7 @@
             echo "<div id='count-selected' style='margin-top: 5px; margin-bottom: 5px'></div>";
             echo "<div id='show-price'></div>";
             echo "<form method='post' action='pay/payForm.php' id='pay-form'>";
+            echo "<div id='myCheckbox' hidden style='padding-top: 15px; padding-bottom: 15px;'><input type='checkbox' name='checkbox'  class='checkbox' id='checkbox' /><label for='checkbox'>Студент / пенсионер</label></div>";
             echo "<button id='go-payment' hidden type='submit'>Перейти к оплате</button>";
             echo "</form>";
             ?>
@@ -116,8 +193,8 @@
 
 
 <script>
-
     $('#pay-form').submit(function () {
+
         $(this).append("<input type='text' name='session_id' value='<?echo $session['id']?>' hidden >");
 
         var arr = $('.sell-seat');
@@ -135,7 +212,6 @@
     $('.has-seat').click(function () {
         onClickClass(this.id);
         showCountSelected();
-        getPriceById(this.id);
         showPrice();
     });
 
@@ -159,30 +235,37 @@
         $('#seat-'+id).remove();
     }
 
+
     function showCountSelected() {
         var count = $('.sell-seat').length;
         if (count==1){
             $('#count-selected').html('Вы выбрали 1 место');
             $('#go-payment').show();
+            $('#myCheckbox').show();
         }else if (count==2 || count==3 || count==4){
             $('#count-selected').html('Вы выбрали '+count+' места');
             $('#go-payment').show();
+            $('#myCheckbox').show();
         }else if (count==5){
             $('#count-selected').html('Вы выбрали 5 мест');
             $('#go-payment').show();
+            $('#myCheckbox').show();
         }else if (count==0){
             $('#count-selected').html('');
             $('#go-payment').hide();
+            $('#myCheckbox').hide();
         }
     }
 
-    function getPriceById(id) {
-        var price = $('input[name='+id+']').val();
-        return price;
 
-    }
+    $('#checkbox').change(function () {
+        showPrice();
+    });
+
+
 
     function showPrice() {
+
         var sum = 0;
         var arr = $('.sell-seat');
         var id;
@@ -192,9 +275,14 @@
 
         }
 
+        if ($('#checkbox').is(':checked')){
+            sum -= sum* <?=$discount?> / 100;
+        }
+
         if (sum!=0){
-            $('#show-price').html('Итоговая сумма: '+sum+' руб');
-        }else $('#show-price').html('');
+                $('#show-price').html('Итоговая сумма: '+sum+' руб');
+            }
+            else $('#show-price').html('');
     }
 
 </script>

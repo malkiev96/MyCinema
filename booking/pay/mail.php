@@ -52,7 +52,7 @@ if (isset($_REQUEST['number']) && isset($_REQUEST['month']) && isset($_REQUEST['
         if($user_id=='guest') $user_id = 0;
 
         for($i = 0 ; $i<count($seats);$i++){
-            $mysqliTicket = mysqli_query($connection,"UPDATE ticket SET isPay='1', mail='$mail' WHERE id =".$hashMas[$i]);
+            $mysqliTicket = mysqli_query($connection,"UPDATE ticket SET isPay='1', mail='$mail', timePay=CURRENT_TIME() WHERE id =".$hashMas[$i]);
             if ($mysqliTicket==false){
                 echo "error";
                 exit();

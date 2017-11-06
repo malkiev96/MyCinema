@@ -56,7 +56,7 @@ if ($user==null && $user['role_id']!=3) {
             <div class="label">Дата сеанса</div>
             <div><input type="date" id="date" name="date"></div>
 
-            <div class="label">Время сеанса</div>
+            <div class="label">Время сеанса, шаг 30 минут</div>
             <div><input type="time" id="time" name="time"></div>
 
             <div class="label">Цена сеанса</div>

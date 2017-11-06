@@ -5,7 +5,9 @@ require "../../includes/config.php";
 if (empty($_SESSION['pay']['user_id']) ||
     empty($_SESSION['pay']['session_id']) ||
     empty($_SESSION['pay']['seats_id']) ||
-    empty($_SESSION['pay']['time'])){
+    empty($_SESSION['pay']['time']) ||
+    empty($_SESSION['pay']['hash']) ||
+    empty($_SESSION['pay']['pay_id'])){
     header('Location:/');
 }
 
@@ -16,14 +18,32 @@ $session_id = $_SESSION['pay']['session_id'];
 $seats = $_SESSION['pay']['seats_id'];
 $hashMas = $_SESSION['pay']['hash'];
 $timeNow = date('H:i:s');
+$discount = $_SESSION['pay']['discount'];
+
+$isStudent = $discount == 0 ? 0 : 1;
+
 
 $payId = $_SESSION['pay']['pay_id'];
 
 if((strtotime($timeNow)-strtotime($time)>=600)){
+    session_destroy();
     header('Location:/');
 }
 
 if($user_id=='guest') $user_id = 0;
+
+$mysqliType = mysqli_query($connection, "SELECT * FROM type");
+while ($type = mysqli_fetch_assoc($mysqliType)){
+    if ($type['id']==1){
+        $placeDiscount[1] = $type['coef'];
+    }
+    if ($type['id']==2){
+        $placeDiscount[2] = $type['coef'];
+    }
+    if ($type['id']==3){
+        $placeDiscount[3] = $type['coef'];
+    }
+}
 
 ?>
 <!doctype html>
@@ -53,6 +73,7 @@ if($user_id=='guest') $user_id = 0;
 
         <?php
 
+
         $mysqliSession = mysqli_query($connection, "SELECT * FROM session WHERE id=".$session_id);
         $session = mysqli_fetch_assoc($mysqliSession);
         $dateTime = date('d.m.Y',strtotime($session['date'])). " ". date('H:i',strtotime($session['time']));
@@ -75,24 +96,27 @@ if($user_id=='guest') $user_id = 0;
         //считаем цену
         $price = 0;
         $priceMas;
+
         foreach ($seats as $seatId){
             $mysqliPlace = mysqli_query($connection,"SELECT * FROM place WHERE id='$seatId'");
             $place = mysqli_fetch_assoc($mysqliPlace);
             if ($place['type']==1){
-                $price += $session['price']*0.8;
-                $priceMas[] = $session['price']*0.8;
+                $i = $session['price']*$placeDiscount[1];
             }elseif ($place['type']==2){
-                $price += $session['price'];
-                $priceMas[] = $session['price'];
+                $i = $session['price']*$placeDiscount[2];
             }elseif ($place['type']==3){
-                $price += $session['price']*1.4;
-                $priceMas[] = $session['price']*1.4;
+                $i = $session['price']*$placeDiscount[3];
             }
+            $price += $i;
+            $priceMas[] = $i-$i*$discount;
         }
 
+        $price -= $price*$discount;
+
         //бронируем места
+
         for ($i = 0; $i<count($hashMas); $i++){
-            $ticketSQL = mysqli_query($connection,"INSERT INTO ticket(id, id_session, id_place, id_user, dateBooking, timeBooking, isStudent, isPay,timePay, price,mail,payId) VALUES('$hashMas[$i]','$session_id','$seats[$i]','$user_id','$date','$time','0','0','','$priceMas[$i]','','$payId')");
+            $ticketSQL = mysqli_query($connection,"INSERT INTO ticket(id, id_session, id_place, id_user, dateBooking, timeBooking, isStudent, isPay,timePay, price,mail,payId) VALUES('$hashMas[$i]','$session_id','$seats[$i]','$user_id','$date','$time','$isStudent','0','','$priceMas[$i]','','$payId')");
         }
 
 
@@ -102,26 +126,16 @@ if($user_id=='guest') $user_id = 0;
             <div id="show-seat"  class='seat-info'>
                 Вы выбрали <?=count($seats)?><span id="seat-count"> места</span>
                 <?php
-                echo "(";
+                /*echo "(";
                 foreach ($seats as $seatId){
                     $mysqliPlace = mysqli_query($connection,"SELECT * FROM place WHERE id='$seatId'");
                     $place = mysqli_fetch_assoc($mysqliPlace);
                     echo "ряд:".$place['row']."-место:".$place['seat']." ";
-                    if ($place['type']==1){
-                        $price += $session['price']*0.8;
-                        $priceMas[] = $session['price']*0.8;
-                    }elseif ($place['type']==2){
-                        $price += $session['price'];
-                        $priceMas[] = $session['price'];
-                    }elseif ($place['type']==3){
-                        $price += $session['price']*1.4;
-                        $priceMas[] = $session['price']*1.4;
-                    }
                 }
-                echo ")";
+                echo ")";*/
             echo "</div>";
             echo "<div class='seat-info'>Итого к оплате: ".$price." руб</div>";
-            echo "<div class='seat-info'>Завершите оплату в течение <span id='timeI'>$timeI</span><span>:</span><span id='timeS'>$timeS</span></div><hr>";
+            echo "<div class='seat-info'>Завершите оплату в течение <span id='timeI'>$timeI</span><span>:</span><span id='timeS'>$timeS</span> мин.</div><hr>";
             ?>
 
             <h2>Онлайн оплата</h2>
@@ -299,7 +313,7 @@ if($user_id=='guest') $user_id = 0;
             s = '0'+s;
         }
         else if (s==0 && i!=0){
-            s=60;
+            s=59;
             i--;
             i = '0'+i;
         }

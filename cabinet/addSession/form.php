@@ -26,49 +26,54 @@ require_once "../../includes/config.php"
 
         <?php
 
-        if ($_POST){
+        if ($_POST && $user['role_id']==3){
             $film_id = $_POST['film_id'];
             $hall_id = $_POST['hall_id'];
             $date = $_POST['date'];
             $time = $_POST['time'];
             $price = $_POST['price'];
             $format = $_POST['format'];
-
             $dateNow = date('Y-m-d');
 
             //валидация формы
             if (!empty($film_id) && !empty($hall_id) && !empty($date) && !empty($time) && !empty($price) && $price>=0 && $date>=$dateNow){
 
-                //проверка значений в базе данных
-                $films_query = mysqli_query($connection,"SELECT * FROM film WHERE id = ".$film_id);
-                $halls_query = mysqli_query($connection,"SELECT * FROM hall WHERE id = ".$hall_id);
+                $timeMin = substr($time,3,4);
+                if ($timeMin=='00' || $timeMin=='30'){
 
-                $film = mysqli_fetch_assoc($films_query);
-                $hall = mysqli_fetch_assoc($halls_query);
+                    //проверка значений в базе данных
+                    $films_query = mysqli_query($connection,"SELECT * FROM film WHERE id = ".$film_id);
+                    $halls_query = mysqli_query($connection,"SELECT * FROM hall WHERE id = ".$hall_id);
 
-                $is3D = false;//проверяем возможность 3D в выбранном зале
-                if ($format!=null){
-                    $is3D = true;
-                    $format = '3D';
-                } else {
-                    $format = '2D';
-                    $is3D = false;
-                }
+                    $film = mysqli_fetch_assoc($films_query);
+                    $hall = mysqli_fetch_assoc($halls_query);
 
-                if (($hall['is3D']==0 && $is3D)){
-                    echo "<p style='color: red'>Сеанс в 3D в невозможен</p>";
-                }else{
-                    if ($film['id']==$film_id && $hall['id']==$hall_id){
-                        $timeEnd = date('H:i',strtotime($time." + ".$film['length']." min"));
-                        $dateBd = date('Y-m-d',strtotime($date));
-                        $length = $film['length'];
+                    $is3D = false;//проверяем возможность 3D в выбранном зале
+                    if ($format!=null){
+                        $is3D = true;
+                        $format = '3D';
+                    } else {
+                        $format = '2D';
+                        $is3D = false;
+                    }
 
-                        $qq = mysqli_query($connection,"INSERT INTO session (id_film, id_hall, date, time, price, format) VALUES ('$film_id','$hall_id','$date','$time','$price','$format')");
-                        echo "Сеанс успешно добавлен";
+                    if (($hall['is3D']==0 && $is3D)){
+                        echo "<p style='color: red'>Сеанс в 3D невозможен</p>";
+                    }else{
+                        if ($film['id']==$film_id && $hall['id']==$hall_id){
+                            $length = $film['length']*60-180*60;
+                            $length = date('H:i:s',$length);
+                            $query = "SELECT * FROM session WHERE date='$date' AND id_hall='$hall_id' AND time_to_sec(time) <= (time_to_sec('$time')+time_to_sec('$length')) AND (time_to_sec(time)+time_to_sec(length)) >= time_to_sec('$time')";
+                            $testSession = mysqli_query($connection,$query);
 
-                    }else echo "<p style='color: red'>Ошибка валидации формы 1</p>";
-                }
-            } else echo "<p style='color: red'>Ошибка валидации формы 1</p>";
+                            if (mysqli_num_rows($testSession)==0){
+                                $insertSession = mysqli_query($connection,"INSERT INTO session (id_film, id_hall, date, time,length, price, format) VALUES ('$film_id','$hall_id','$date','$time','$length','$price','$format')");
+                                echo "<div style='padding: 15px;margin:0;'>Сеанс успешно добавлен</div>";
+                            }else echo "<div style='color: red;padding: 15px; margin: 0;'>В данное время зал занят</div>";
+                        }else echo "<p style='color: red;padding: 15px; margin: 0;'>Ошибка валидации формы</p>";
+                    }
+                }else echo "<p style='color: red; padding: 15px; margin: 0;'>Время сеанса должно быть с шагом 30 минут</p>";
+            } else echo "<p style='color: red; padding: 15px; margin: 0;'>Ошибка валидации формы</p>";
         }
 
 

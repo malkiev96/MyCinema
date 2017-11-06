@@ -1,9 +1,18 @@
+<?php
+require_once "../includes/config.php";
+if (isset($_GET['id'])) {
+
+    $id = $_GET[ 'id' ];
+    $filmQuery = mysqli_query($connection, "SELECT * FROM film WHERE id=$id");
+    if (mysqli_num_rows($filmQuery) == null) {
+        header('Location: /error');
+    }
+}
+?>
+
 <!doctype html>
 <html>
 <head>
-    <?php
-    require_once "../includes/config.php";
-    ?>
     <meta charset="UTF-8">
     <title><?=$config['title']?></title>
     <link rel="stylesheet" href="../includes/css/style.css">
@@ -65,7 +74,7 @@
             echo "<h2>Описание</h2>";
             echo $film['description'];
             echo "</div>";
-            $sessions = mysqli_query($connection,"SELECT * FROM session WHERE id_film='$id' AND date=CURRENT_DATE() AND time>=CURRENT_TIME() OR date>CURRENT_DATE() AND id_film='$id'");
+            $sessions = mysqli_query($connection,"SELECT * FROM session WHERE id_film='$id' AND date=CURRENT_DATE() AND time_to_sec(time)>(time_to_sec(CURRENT_TIME())+30*60) OR date>CURRENT_DATE() AND id_film='$id'");
 
 
             //получаем сеансы
@@ -96,30 +105,26 @@
 
 
                     //Сверяем, не устарел ли сеанс
-                    if ((strtotime($date)>strtotime($dateToday)) || ((strtotime($timeStart)<strtotime($time)) && (strtotime($date)==strtotime($dateToday)))){
-                        $hall = mysqli_query($connection,"SELECT name FROM hall WHERE id = ".$session['id_hall']);
-                        $id = $session['id'];
-                        $name = mysqli_fetch_row($hall);
-                        echo "<tr>";
-                        echo "<td class='table-td'>".$date."</td>";
-                        echo "<td class='table-td'>".substr($session['time'],0,5)."</td>";
-                        echo "<td class='table-td'>".$session['format']."</td>";
-                        echo "<td class='table-td'>".$session['price']." р.</td>";
-                        echo "<td class='table-td'>".$name[0]."</td>";
-                        echo "<td class='table-td'><a href='/booking/?session=$id'><div class='buy-ticket'>Купить</div></a></td>";
-                        if ($user['role_id']>=2){
-    echo "<td class='table-td'><a href='/films/seats.php?session=$id'><div class='buy-ticket'>Просмотр</div></a></td></tr>";
-                        }
+                    //if ((strtotime($date)>strtotime($dateToday)) || ((strtotime($timeStart)<strtotime($time)) && (strtotime($date)==strtotime($dateToday)))){
+                    $hall = mysqli_query($connection,"SELECT name FROM hall WHERE id = ".$session['id_hall']);
+                    $id = $session['id'];
+                    $name = mysqli_fetch_row($hall);
+                    echo "<tr>";
+                    echo "<td class='table-td'>".$date."</td>";
+                    echo "<td class='table-td'>".substr($session['time'],0,5)."</td>";
+                    echo "<td class='table-td'>".$session['format']."</td>";
+                    echo "<td class='table-td'>".$session['price']." р.</td>";
+                    echo "<td class='table-td'>".$name[0]."</td>";
+                    echo "<td class='table-td'><a href='/booking/?session=$id'><div class='buy-ticket'>Купить</div></a></td>";
+                    if ($user['role_id']>=2){
+                        echo "<td class='table-td'><a href='/films/seats.php?session=$id'><div class='buy-ticket'>Просмотр мест</div></a></td></tr>";
                     }
-
 
                 }
                 echo "</table>";
 
             }else echo "<h2>Сеансов нет</h2>";
             echo "</div>";
-        }else{
-
         }
     } else if(empty($_GET)){
     //показываем все фильмы
@@ -129,9 +134,9 @@
         <div class="film_list">
                 <?php
 
-                $sessionsToday = mysqli_query($connection,"SELECT * FROM session");
+                $sessionsToday = mysqli_query($connection,"SELECT * FROM session WHERE date>CURRENT_DATE() OR date=CURRENT_DATE() AND time_to_sec(time)>(time_to_sec(CURRENT_TIME())+30*60)");
                 if (mysqli_num_rows($sessionsToday)==0){
-                    echo "Сегодня сеансов нет.";
+                    echo "В ближайшее время сеансы не запланированы.";
                 }
                 else {
                     $usedFilms = array();//записываем в массив фильмы без повторений
@@ -149,10 +154,15 @@
 
                                 <div class="layout-film-item" style="visibility: hidden; width: 267px; height: 380px;
                                 color: white; background-color:rgba(0,0,0,.5);" id="<?echo 'layout-film-item-'.$film["id"]?>">
-                                    <div style="width: 237px; height: 350px; padding: 25px; ">
-                                        <div class="filmName"><?=$film['name']?></div>
-                                        <div class="filmAge"><?=$film['age']?>+</div>
-                                        <div><a href="/films/?id=<?=$film['id']?>" class="button-info">Подробнее</a></div>
+                                    <div style="position: relative; width: 237px; height: 350px; padding: 25px; ">
+                                        <?php
+                                        if ($film['format'] == '3D'){
+                                            echo "<div class=\"filmName\">".$film['name']." 3D</div>";
+                                        }else echo "<div class=\"filmName\">".$film['name']."</div>";
+                                        ?>
+                                        <div style="padding-top: 15px; margin: 0;"><?=$film['genre']?></div>
+                                        <div style="padding-top: 5px;"><?=$film['age']?>+</div>
+                                       <a href="/films/?id=<?=$film['id']?>" style="position: absolute; top: 75%;" class="button-info">Подробнее</a>
                                     </div>
                                 </div>
                             </div>

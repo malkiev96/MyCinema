@@ -27,7 +27,7 @@
 
 
 
-        if ($_POST) {
+        if ($_POST && $user['role_id']==3) {
 
             $name = $_POST[ 'name' ];
             $description = $_POST[ 'description' ];
@@ -63,7 +63,7 @@
                     } else {
                         $logo = $result[ 'filename' ];
                         mysqli_query($connection, "INSERT INTO film(name, description, year, country, format, length, age, dateStart, dateStop, genre, role, logo) VALUES ('$name','$description','$year','$country','$format','$length','$age','$dateStart','$dateStop','$genre','$role','$logo')");
-                        echo "<p style='color: green; padding-top: 25px'>Фильм успешно добавлен</p>";
+                        echo "<p style='color: green; padding: 25px'>Фильм успешно добавлен</p>";
                     }
                 } else {
                     echo "<p style='color: red'>Ошибка при добавлении фильма</p>";

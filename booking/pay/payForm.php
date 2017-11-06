@@ -7,6 +7,14 @@ if ($_POST){
     $seats = htmlspecialchars($_POST['seats']);
     $seats = explode(',',$seats);//Восстанавливаем массив из переданной строки
 
+    if (isset($_POST['checkbox'])){
+        $mysqliType = mysqli_query($connection,"SELECT coef FROM type WHERE id=4");
+        $mysqliType = mysqli_fetch_assoc($mysqliType);
+        $discount = $mysqliType['coef']/100;
+    }else{
+        $discount = 0;
+    }
+
     $mySeats;
     $myHash;
 
@@ -27,12 +35,21 @@ if ($_POST){
             $mysqliPlace = mysqli_query($connection,"SELECT * FROM place WHERE seat='$seat' AND row='$row' AND Id_hall=".$session['id_hall']);
             $assoc = mysqli_fetch_assoc($mysqliPlace);
             if ($seat == $assoc['seat'] && $row==$assoc['row']){
+                $mysqliTicket = mysqli_query($connection,"SELECT id FROM ticket WHERE id_session=$sessionId AND id_place=".$assoc['id']);
+                $ticket = mysqli_fetch_assoc($mysqliTicket);
+                if ($ticket['id']!=null){
+                    print_r("Error selecting place");
+                    exit();
+                }
                 $mySeats[]= $assoc['id'];
                 $myHash[] = rand(100000000,999999999);
             }else{
                 header('Location: /index.php');
             }
         }
+        //проверяем, не занято ли выбранное место
+
+
         //Добавить сессии php
         if ($user['id']==null){
             $_SESSION['pay']['user_id'] = 'guest';
@@ -46,6 +63,7 @@ if ($_POST){
         $_SESSION['pay']['date'] = date('Y-m-d');
         $myPayId = rand(100000000,999999999);
         $_SESSION['pay']['pay_id'] = $myPayId;
+        $_SESSION['pay']['discount'] = $discount;
 
         header('Location: /booking/pay');
 
